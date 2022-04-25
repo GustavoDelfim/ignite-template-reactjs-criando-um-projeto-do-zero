@@ -1,4 +1,6 @@
 import { GetStaticProps } from 'next';
+import Header from '../components/Header';
+import { PostResume } from '../components/PostResume';
 
 import { getPrismicClient } from '../services/prismic';
 
@@ -24,9 +26,26 @@ interface HomeProps {
   postsPagination: PostPagination;
 }
 
-// export default function Home() {
-//   // TODO
-// }
+export default function Home() {
+  return (
+    <>
+      <div className={styles.header}>
+        <Header />
+      </div>
+
+      <section className={commonStyles.containerCenter}>
+        <PostResume />
+        <PostResume />
+        <PostResume />
+        <PostResume />
+        <PostResume />
+        <PostResume />
+
+        <a className={styles.readMore}> Carregar mais posts </a>
+      </section>
+    </>
+  )
+}
 
 // export const getStaticProps = async () => {
 //   // const prismic = getPrismicClient({});
