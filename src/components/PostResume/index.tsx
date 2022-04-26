@@ -1,12 +1,17 @@
 import styles from './post-resume.module.scss'
 
+import Link from 'next/link'
 import { FiCalendar, FiUser } from "react-icons/fi";
 
 export function PostResume() {
   return (
     <article className={styles.article}>
       <header className={styles.header}>
-        <h1><a href="">Como utilizar Hooks</a></h1>
+        <h1>
+          <Link href={'/post/teste'}>
+            <a href="">Como utilizar Hooks</a>
+          </Link>
+        </h1>
         <p> Pensando em sincronização em vez de ciclos de vida. </p>
       </header>
 
