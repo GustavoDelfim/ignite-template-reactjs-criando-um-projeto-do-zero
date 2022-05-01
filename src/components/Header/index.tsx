@@ -7,7 +7,7 @@ export default function Header() {
     <header className={styles.header}>
       <div className={commonStyles.containerCenter}>
         <Link href="/">
-          <img src="/logo.png" alt="Logo" />
+          <img src="/logo.png" alt="logo" />
         </Link>
       </div>
     </header>

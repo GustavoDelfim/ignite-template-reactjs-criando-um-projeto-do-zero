@@ -3,26 +3,34 @@ import styles from './post-resume.module.scss'
 import Link from 'next/link'
 import { FiCalendar, FiUser } from "react-icons/fi";
 
-export function PostResume() {
+interface PostResumeProps {
+  uid: string
+  title: string
+  subtitle: string
+  first_publication_date: string
+  author: string
+}
+
+export function PostResume(props: PostResumeProps) {
   return (
     <article className={styles.article}>
       <header className={styles.header}>
         <h1>
-          <Link href={'/post/teste'}>
-            <a href="">Como utilizar Hooks</a>
+          <Link href={`/post/${props.uid}`}>
+            <a>{props.title}</a>
           </Link>
         </h1>
-        <p> Pensando em sincronização em vez de ciclos de vida. </p>
+        <p> {props.subtitle} </p>
       </header>
 
       <div className={styles.infos}>
         <time>
           <FiCalendar size={20} />
-          <span> 15 Mar 2021 </span>
+          <span> {props.first_publication_date} </span>
         </time>
         <address>
           <FiUser size={20} />
-          <span> Jason Gennaro </span>
+          <span> {props.author} </span>
         </address>
       </div>
     </article>

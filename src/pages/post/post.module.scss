@@ -6,7 +6,7 @@
 
 .header {
   h1 {
-    font-size: 1.75rem;
+    font-size: 3rem;
     margin-bottom: .75rem;
     font-weight: 700;
 
@@ -48,4 +48,25 @@
 
 .content {
   margin-top: 4rem;
+}
+
+.paragraph {
+  margin-bottom: 3rem;
+
+  h2 {
+    font-size: 2.25rem;
+    margin-bottom: .75rem;
+    font-weight: 700;
+    margin-bottom: 2.75rem;
+  }
+
+  >div {
+    font-size: 1.125rem;
+    color: var(--body);
+    margin-bottom: 2rem;
+  }
+}
+
+.loading {
+  margin-top: 3rem;
 }
