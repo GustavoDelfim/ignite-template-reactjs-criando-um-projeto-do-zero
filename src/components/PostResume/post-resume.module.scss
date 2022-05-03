@@ -28,6 +28,7 @@
 
   time,
   address {
+    font-style: normal;
     display: flex;
     align-items: center;
 
@@ -35,6 +36,10 @@
       font-size: .875rem;
       margin-left: .5rem;
     }
+  }
+
+  time {
+    text-transform: capitalize;
   }
 
   address {

@@ -13,9 +13,11 @@ import { formatInBR } from '../../utils/date';
 import { calculateReadingTime } from '../../utils/post';
 
 interface Post {
+  uid: string;
   first_publication_date: string | null;
   data: {
     title: string;
+    subtitle: string;
     banner: {
       url: string;
     };
@@ -99,7 +101,11 @@ export default function Post({ post }: PostProps) {
 export const getStaticPaths: GetStaticPaths = async () => {
   const prismic = getPrismicClient({});
   const postsResponse = await prismic.getByType('posts', {
-    pageSize: 1
+    pageSize: 1,
+    orderings: {
+      field: 'document.first_publication_date',
+      direction: 'desc',
+    }
   });
 
   const paths = postsResponse.results.map(post => {
@@ -122,17 +128,37 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
     'posts',
     String(slug),
     {
-      fetch: ['author.name']
+      graphQuery: `{
+        posts {
+          ...postsFields
+          author {
+            name
+          }
+        }
+      }`
     }
   );
 
-  console.log(response)
+  // Foi necessário mudar esse script para Author, pois a versão atual do prismic so roda author como Relationship.
+  // O teste quebra com o author sendo um campo relacional
+  // Referencia 1: https://prismic.io/docs/technologies/graphquery-rest-api
+  // Referencia 2: https://community.prismic.io/t/how-to-get-authors-name-and-image-of-the-blog-post-published/4763
+  let author = ''
+
+  // Verifico se é o mockup do teste, se não é direto do prismic
+  if (typeof response.data.author == 'string') {
+    author = response.data.author
+  } else {
+    author = response.data.author ? response.data.author.data.name : ''
+  }
 
   const post: Post = {
+    uid: response.uid,
     first_publication_date: response.first_publication_date,
     data: {
       title: response.data.title,
-      author: 'Gustavo D.',
+      subtitle: response.data.subtitle,
+      author: author,
       banner: {
         url: response.data.banner.url,
       },

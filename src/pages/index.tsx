@@ -43,7 +43,7 @@ export default function Home({ postsPagination }: HomeProps) {
             data: {
               title: post.data.title,
               subtitle: post.data.subtitle,
-              author: 'Gustavo',
+              author: post.data.author ? post.data.author.data.name : '',
             }
           }
         })
@@ -86,24 +86,28 @@ export const getStaticProps: GetStaticProps = async () => {
   const prismic = getPrismicClient({});
   const postsResponse = await prismic.getByType('posts', {
     pageSize: 1,
+    orderings: {
+      field: 'document.first_publication_date',
+      direction: 'desc',
+    },
     graphQuery: `{
       posts {
-        title
+        ...postsFields
+        author {
+          name
+        }
       }
-    }`,
+    }`
   });
 
   const posts: Post[] = postsResponse.results.map(post => {
-
-    console.log(post)
-
     return {
       uid: post.uid,
       first_publication_date: post.first_publication_date,
       data: {
         title: post.data.title,
         subtitle: post.data.subtitle,
-        author: 'Gustavo',
+        author: post.data.author ? post.data.author.data.name : '',
       }
     }
   })
