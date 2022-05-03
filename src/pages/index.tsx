@@ -37,13 +37,26 @@ export default function Home({ postsPagination }: HomeProps) {
       .then((res) => res.json())
       .then((res) => {
         const newPosts = res.results.map(post => {
+          // Foi necessário mudar esse script para Author, pois a versão atual do prismic so roda author como Relationship.
+          // O teste quebra com o author sendo um campo relacional
+          // Referencia 1: https://prismic.io/docs/technologies/graphquery-rest-api
+          // Referencia 2: https://community.prismic.io/t/how-to-get-authors-name-and-image-of-the-blog-post-published/4763
+          let author = ''
+
+          // Verifico se é o mockup do teste, se não é direto do prismic
+          if (typeof post.data.author == 'string') {
+            author = post.data.author
+          } else {
+            author = post.data.author ? post.data.author.data.name : ''
+          }
+
           return {
             uid: post.uid,
             first_publication_date: post.first_publication_date,
             data: {
               title: post.data.title,
               subtitle: post.data.subtitle,
-              author: post.data.author ? post.data.author.data.name : '',
+              author: author
             }
           }
         })
@@ -100,14 +113,28 @@ export const getStaticProps: GetStaticProps = async () => {
     }`
   });
 
+
   const posts: Post[] = postsResponse.results.map(post => {
+    // Foi necessário mudar esse script para Author, pois a versão atual do prismic so roda author como Relationship.
+    // O teste quebra com o author sendo um campo relacional
+    // Referencia 1: https://prismic.io/docs/technologies/graphquery-rest-api
+    // Referencia 2: https://community.prismic.io/t/how-to-get-authors-name-and-image-of-the-blog-post-published/4763
+    let author = ''
+
+    // Verifico se é o mockup do teste, se não é direto do prismic
+    if (typeof post.data.author == 'string') {
+      author = post.data.author
+    } else {
+      author = post.data.author ? post.data.author.data.name : ''
+    }
+
     return {
       uid: post.uid,
       first_publication_date: post.first_publication_date,
       data: {
         title: post.data.title,
         subtitle: post.data.subtitle,
-        author: post.data.author ? post.data.author.data.name : '',
+        author: author
       }
     }
   })
