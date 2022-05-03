@@ -4,13 +4,13 @@ import Header from '../../components/Header';
 
 import { getPrismicClient } from '../../services/prismic';
 
-import { format } from 'date-fns';
-import ptBR from 'date-fns/locale/pt-BR';
-
 import commonStyles from '../../styles/common.module.scss';
 import styles from './post.module.scss';
 import { RichText } from 'prismic-dom';
 import { useRouter } from 'next/router';
+
+import { formatInBR } from '../../utils/date';
+import { calculateReadingTime } from '../../utils/post';
 
 interface Post {
   first_publication_date: string | null;
@@ -22,10 +22,11 @@ interface Post {
     author: string;
     content: {
       heading: string;
-      body: string;
+      body: {
+        text: string;
+      }[];
     }[];
   };
-  readingTime: number
 }
 
 interface PostProps {
@@ -43,6 +44,12 @@ export default function Post({ post }: PostProps) {
     )
   }
 
+  const contentPost: string[] = post.data.content.map(content => {
+    const heading = content.heading.replace(/(<([^>]+)>)/g, '')
+    const body = RichText.asText(content.body)
+    return `${heading} ${body}`
+  })
+
   return (
     <>
       <Header />
@@ -57,7 +64,7 @@ export default function Post({ post }: PostProps) {
         <div className={styles.infos}>
           <time>
             <FiCalendar size={20} />
-            <span> {post.first_publication_date} </span>
+            <span> {formatInBR(post.first_publication_date, 'dd MMM yyyy')} </span>
           </time>
           <address>
             <FiUser size={20} />
@@ -65,7 +72,7 @@ export default function Post({ post }: PostProps) {
           </address>
           <p>
             <FiClock size={20} />
-            <span> {post.readingTime} min </span>
+            <span> {calculateReadingTime(contentPost)} min </span>
           </p>
         </div>
 
@@ -78,7 +85,7 @@ export default function Post({ post }: PostProps) {
               >
                 <h2>{content.heading}</h2>
                 <div
-                  dangerouslySetInnerHTML={{ __html: String(content.body) }}
+                  dangerouslySetInnerHTML={{ __html: RichText.asHtml(content.body) }}
                 />
               </div>
             )
@@ -111,33 +118,26 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
   const { slug } = params
 
   const prismic = getPrismicClient({});
-  const response = await prismic.getByUID('posts', String(slug));
+  const response = await prismic.getByUID(
+    'posts',
+    String(slug),
+    {
+      fetch: ['author.name']
+    }
+  );
 
-  const readingTime = response.data.content.reduce((prev, content) => {
-    const headingSplit = content.heading.split(' ')
-    const textSplit = RichText.asText(content.body).split(' ')
-    const minutes = (headingSplit.length + textSplit.length) / 200
-    return prev + Math.ceil(minutes)
-  }, 0)
+  console.log(response)
 
   const post: Post = {
-    first_publication_date: format(
-      new Date(response.first_publication_date),
-      "dd/MM/yyyy",
-      { locale: ptBR }
-    ),
+    first_publication_date: response.first_publication_date,
     data: {
       title: response.data.title,
-      author: 'Gustavo',
+      author: 'Gustavo D.',
       banner: {
         url: response.data.banner.url,
       },
-      content: response.data.content.map(content => ({
-        heading: content.heading,
-        body: RichText.asHtml(content.body)
-      }))
-    },
-    readingTime: readingTime
+      content: response.data.content
+    }
   }
 
   return {

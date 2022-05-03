@@ -35,12 +35,12 @@ interface GetStaticPropsResult {
 
 const mockedGetByTypeReturn = {
   results: [
-  {
-    uid: 'como-utilizar-hooks',
-  },
-  {
-    uid: 'criando-um-app-cra-do-zero',
-  },
+    {
+      uid: 'como-utilizar-hooks',
+    },
+    {
+      uid: 'criando-um-app-cra-do-zero',
+    },
   ]
 }
 
